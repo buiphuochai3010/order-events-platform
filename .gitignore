@@ -26,7 +26,38 @@ go.work.sum
 
 # env file
 .env
+.env.*
+!.env.example
+
+# AI tool config (local, không chia sẻ qua git)
+.qodo/
 
 # Editor/IDE
-# .idea/
-# .vscode/
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node / React frontend
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.vite/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Docker / K8s local state
+infra/postgres-data/
+infra/kafka-data/
+infra/redis-data/
+*.kubeconfig
+kubeconfig*.yaml
+
+# Secrets (không commit key/cert thật)
+*.pem
+*.key
+secrets.yaml
