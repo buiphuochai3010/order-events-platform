@@ -7,12 +7,15 @@ Trạng thái hiện tại: **chưa có code**, repo mới có docs (PROJECT_PLA
 ---
 
 ## order-service
-*(chưa có code)*
 
-- Tạo order → `POST /api/orders`:
-- Lấy order → `GET /api/orders/:id`:
-- Publish event `order-created`:
-- Model `orders`, `order_items`:
+- Entry point, wiring router/DB: [order-service/main.go](order-service/main.go)
+- Config (đọc `PORT`, `DATABASE_URL` từ env): [order-service/internal/config/config.go](order-service/internal/config/config.go)
+- Kết nối Postgres + tạo schema `orders`/`order_items`: [order-service/internal/db/db.go](order-service/internal/db/db.go)
+- Model `Order`, `OrderItem`, request DTO: [order-service/internal/models/order.go](order-service/internal/models/order.go)
+- Tạo order → `POST /api/orders`: [order-service/internal/handlers/order.go](order-service/internal/handlers/order.go) (`CreateOrder`)
+- Lấy 1 order → `GET /api/orders/:id`: [order-service/internal/handlers/order.go](order-service/internal/handlers/order.go) (`GetOrder`)
+- Danh sách order theo customer → `GET /api/orders?customer_id=`: [order-service/internal/handlers/order.go](order-service/internal/handlers/order.go) (`ListOrders`)
+- Publish event `order-created`: *(chưa làm — theo thứ tự PROJECT_PLAN.md, sẽ thêm ở bước Kafka)*
 
 ## inventory-service
 *(chưa có code)*
@@ -31,8 +34,7 @@ Trạng thái hiện tại: **chưa có code**, repo mới có docs (PROJECT_PLA
 *(chưa có code)*
 
 ## infra
-*(chưa có code)*
 
-- `infra/docker-compose.yml`:
-- `infra/k8s/`:
-- `infra/grafana/`:
+- `infra/docker-compose.yml`: chạy Postgres (`order_db`) cho local dev — sẽ bổ sung Kafka, Redis, các service khác, monitoring stack ở các bước sau.
+- `infra/k8s/`: *(chưa có code)*
+- `infra/grafana/`: *(chưa có code)*
