@@ -11,7 +11,7 @@ order-events-platform/
 ├── order-service/           # Gin, publish event
 ├── inventory-service/       # Gin, consumer, Postgres + Redis cache
 ├── notification-service/    # Gin, consumer, log/giả lập gửi email
-├── frontend/                 # React + Tailwind + Ant Design
+├── frontend/                 # Next.js + Tailwind + Ant Design
 ├── infra/
 │   ├── docker-compose.yml    # Kafka/Redpanda, Postgres, Redis, 3 service, Prometheus, Grafana, Loki
 │   ├── k8s/
