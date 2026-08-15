@@ -9,6 +9,7 @@ import (
 	"order-service/internal/config"
 	"order-service/internal/db"
 	"order-service/internal/handlers"
+	"order-service/internal/kafka"
 )
 
 func main() {
@@ -25,7 +26,10 @@ func main() {
 		log.Fatalf("failed to init schema: %v", err)
 	}
 
-	orderHandler := handlers.NewOrderHandler(pool)
+	producer := kafka.NewProducer(cfg.KafkaBrokers, cfg.KafkaTopic)
+	defer producer.Close()
+
+	orderHandler := handlers.NewOrderHandler(pool, producer)
 
 	router := gin.Default()
 	router.GET("/healthz", func(c *gin.Context) {

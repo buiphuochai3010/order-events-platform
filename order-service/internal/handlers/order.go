@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"errors"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -10,15 +11,17 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
+	"order-service/internal/kafka"
 	"order-service/internal/models"
 )
 
 type OrderHandler struct {
-	pool *pgxpool.Pool
+	pool     *pgxpool.Pool
+	producer *kafka.Producer
 }
 
-func NewOrderHandler(pool *pgxpool.Pool) *OrderHandler {
-	return &OrderHandler{pool: pool}
+func NewOrderHandler(pool *pgxpool.Pool, producer *kafka.Producer) *OrderHandler {
+	return &OrderHandler{pool: pool, producer: producer}
 }
 
 func (h *OrderHandler) CreateOrder(c *gin.Context) {
@@ -72,6 +75,13 @@ func (h *OrderHandler) CreateOrder(c *gin.Context) {
 	if err := tx.Commit(ctx); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to commit transaction"})
 		return
+	}
+
+	event := models.NewOrderCreatedEvent(order)
+	if err := h.producer.PublishOrderCreated(ctx, event); err != nil {
+		// Fire-and-forget: order đã tạo thành công trong DB, không rollback vì Kafka lỗi.
+		// Đây là trade-off đã ghi trong system-architecture.md mục 7 (không có saga/distributed tx).
+		log.Printf("failed to publish order-created event for order %s: %v", order.ID, err)
 	}
 
 	c.JSON(http.StatusCreated, order)

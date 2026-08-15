@@ -148,7 +148,7 @@ Inventory Service và Notification Service **không expose API cho Frontend** �
 docker-compose.yml
 ├── postgres          (order_db + inventory_db, 2 DB trong 1 container)
 ├── redis
-├── kafka + zookeeper (hoặc redpanda)
+├── kafka             (KRaft mode — KHÔNG dùng Zookeeper, không dùng Redpanda)
 ├── order-service
 ├── inventory-service
 ├── notification-service
@@ -158,7 +158,12 @@ docker-compose.yml
 └── alertmanager
 ```
 
-Network nội bộ: các service gọi nhau qua tên container (`order-service:8080`, `postgres:5432`, `kafka:9092`).
+**Quyết định đã chốt (2026-08-16):** dùng **Kafka thật, chạy KRaft mode** (image `confluentinc/cp-kafka:7.6.1`, 1 node vừa broker vừa controller). Lý do:
+- Không dùng Redpanda — project hướng tới demo phỏng vấn, muốn nói đúng "Kafka" không phải hàng thay thế ít người biết.
+- Không dùng Zookeeper — từ Kafka 3.3 KRaft đã production-ready, Kafka 4.0 xoá hẳn Zookeeper; setup mới không nên học/dùng cơ chế đang bị deprecate.
+- Cấu hình KRaft mẫu, topic `order-created` (3 partitions) đã tạo tay và verify chạy được: xem [order-service/README hoặc infra/docker-compose.yml](infra/docker-compose.yml).
+
+Network nội bộ: các service gọi nhau qua tên container (`order-service:8080`, `postgres:5432`, `kafka:29092` — lưu ý cổng nội bộ container-to-container khác cổng expose ra host `9092`, xem listener config trong `docker-compose.yml`).
 
 ### 5.2 K8s (k3d/Minikube local)
 

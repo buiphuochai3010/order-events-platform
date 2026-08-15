@@ -49,7 +49,7 @@ Order Service (Gin) ──publish──► Kafka Topic: "order-created"
 ## 3. Chạy ở đâu — tránh tốn tiền
 
 - Kafka và K8s là software mã nguồn mở, free. Tốn tiền chỉ khi thuê managed service (GKE, Confluent Cloud...).
-- **Kafka local**: `docker-compose` (Kafka + Zookeeper, hoặc Redpanda — nhẹ hơn, tương thích Kafka API).
+- **Kafka local**: `docker-compose`, Kafka thật chạy **KRaft mode** (không Zookeeper) — chi tiết quyết định xem [system-architecture.md](system-architecture.md#5-hạ-tầng--topology).
 - **K8s local**: **k3d** hoặc **Minikube** — giả lập cluster trong Docker, `kubectl apply` y như cluster thật.
 - Đẩy lên GitHub là code + config (Dockerfile, docker-compose.yml, manifest .yaml, CI/CD workflow) — người xem tự chạy lại bằng `docker-compose up` hoặc `k3d cluster create`, không cần trả tiền hosting để demo.
 - Nếu muốn có link demo online 24/7: deploy bản đơn giản (không Kafka, không K8s) lên free tier Railway/Render/Fly.io, kèm video demo ngắn cho bản đầy đủ.
